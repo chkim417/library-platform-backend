@@ -1,4 +1,6 @@
 spring:
+  security:
+    enabled: false
   application:
     name: demo
   datasource:
@@ -15,3 +17,8 @@ spring:
     console:
       enabled: true
       path: /h2-console
+
+openai:
+  api:
+    key: "안알랴줌" #각자 키를 환경변수로 설정해주세요!
+    url: https://api.openai.com/v1/images/generations
