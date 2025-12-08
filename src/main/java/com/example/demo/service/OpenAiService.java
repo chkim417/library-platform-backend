@@ -29,7 +29,8 @@ public class OpenAiService {
         this.restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory());
     }
 
-    public String generateImage(String prompt) {
+    public ImageResponse generateImage(String prompt) {
+
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.set("Authorization", "Bearer " + apiKey.trim());
@@ -43,9 +44,17 @@ public class OpenAiService {
                 ImageResponse.class
         );
 
-        if (response.getBody() != null && !response.getBody().getData().isEmpty()) {
-            return response.getBody().getData().get(0).getUrl();
+        ImageResponse body = response.getBody();
+
+        if (body != null && body.getData() != null && !body.getData().isEmpty()) {
+            return body;  // 정상 응답
         }
-        return "이미지가 생성되지 않았습니다.";
+
+        // 실패 응답
+        ImageResponse emptyResponse = new ImageResponse();
+        emptyResponse.setErrorMessage("이미지가 생성되지 않았습니다.");
+        return emptyResponse;
     }
+
 }
+
