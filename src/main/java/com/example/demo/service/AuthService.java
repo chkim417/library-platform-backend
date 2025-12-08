@@ -23,7 +23,6 @@ public class AuthService {
 
     private final MemberRepository memberRepository;
     private final EmployeeRepository employeeRepository;
-    // ▼▼▼ 이 줄이 빠져서 에러가 났던 겁니다! ▼▼▼
     private final MemberManagementRepository memberManagementRepository;
 
     private final PasswordEncoder passwordEncoder;
