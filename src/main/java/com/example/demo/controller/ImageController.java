@@ -1,5 +1,7 @@
 package com.example.demo.controller;
 
+import com.example.demo.dto.ImageRequest;
+import com.example.demo.dto.ImageResponse;
 import org.springframework.web.bind.annotation.*;
 import com.example.demo.service.OpenAiService;
 
