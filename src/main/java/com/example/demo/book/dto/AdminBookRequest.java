@@ -16,4 +16,5 @@ public class AdminBookRequest {
     private String coverImageUrl;
     private Integer price;
     private LocalDate registrationDate;
+    private String description; // 책소개
 }

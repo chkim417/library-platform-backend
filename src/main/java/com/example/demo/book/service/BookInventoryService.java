@@ -2,7 +2,7 @@ package com.example.demo.book.service;
 
 import com.example.demo.book.entity.Book;
 import com.example.demo.book.entity.BookManagement;
-import com.example.demo.book.repository.BookManagementRepository;
+import com.example.demo.book.repository.BookAdminRepository;
 import com.example.demo.book.repository.BookRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -13,34 +13,34 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class BookInventoryService {
-    private final BookRepository bookRepository;
-    private final BookManagementRepository bookManagementRepository;
+    private final BookRepository bookRepository; // Book 조회용
+    private final BookAdminRepository bookAdminRepository; // 재고(BookManagement) 조작용
 
     /**
-     * 도서 재고 입고 처리
+     * 도서 재고 증감 처리
      *
-     * @param bookId 입고할 도서의 ID
-     * @param count  입고 수량 (0 이하인 경우 현재 재고 수만 반환)
-     * @return 입고 후 현재 재고(대출 가능 수)
+     * @param bookId 재고를 변경할 도서 ID
+     * @param count  증감 수량 (0 이하이면 재고 변경 없이 현재 수량 반환)
+     * @return 변경 후 재고 수량(대출 가능 수량 기준)
      *
      * 동작:
-     * 1) `bookId` 로 도서를 조회한다. 없으면 예외 발생.
-     * 2) `count` 가 0 이하이면 현재 재고 수를 조회하여 반환한다.
-     * 3) count 만큼 `BookManagement` 엔티티를 생성(대출되지 않은 상태)하여 저장한다.
-     * 4) 저장 후 현재 재고 수를 반환한다.
+     * 1) bookId로 도서를 조회, 없으면 예외 발생.
+     * 2) count <= 0 이면 재고 변경 없이 현재 재고 반환.
+     * 3) count > 0 이면 해당 수량만큼 BookManagement(대출 가능) 엔티티를 생성 후 저장.
+     * 4) 최종 재고 수량을 반환.
      */
     public int restock(Long bookId, int count) {
-        // 도서 존재 여부 확인 (없으면 IllegalArgumentException 발생)
+        // 도서 존재 확인 (없으면 IllegalArgumentException)
         Book book = bookRepository.findById(bookId)
                 .orElseThrow(() -> new IllegalArgumentException("Book not found: " + bookId));
 
-        // 요청된 입고 수량이 0이하일 경우, 변경 없이 현재 재고 수를 반환
-        if (count <= 0) return bookManagementRepository.countByBookIdAndIsLoanedFalse(bookId);
+        // 증감 수량이 0 이하이면 재고 변경 없이 현재 재고 반환
+        if (count <= 0) return bookAdminRepository.countByBookIdAndIsLoanedFalse(bookId);
 
-        // 저장할 BookManagement 엔티티들을 수집
+        // 새로 생성할 BookManagement 엔티티들을 수집
         List<BookManagement> toSave = new ArrayList<>();
         for (int i = 0; i < count; i++) {
-            // 각각의 도서관리 레코드는 book 참조와 대출 여부(false)를 가짐
+            // 각 재고는 해당 book을 참조하고 isLoaned=false(대출 가능)로 생성
             BookManagement bm = BookManagement.builder()
                     .book(book)
                     .isLoaned(false)
@@ -49,9 +49,9 @@ public class BookInventoryService {
         }
 
         // 한 번에 저장
-        bookManagementRepository.saveAll(toSave);
+        bookAdminRepository.saveAll(toSave);
 
-        // 저장 후 현재 (대출 가능) 재고 수 반환
-        return bookManagementRepository.countByBookIdAndIsLoanedFalse(bookId);
+        // 변경된 대출 가능 재고 수량 반환
+        return bookAdminRepository.countByBookIdAndIsLoanedFalse(bookId);
     }
 }
