@@ -95,5 +95,5 @@ public class BookServiceImpl implements BookService {
                                 .summary(summary) // includeDetail이 false면 null
                                 .build();
         }
-
+        // 원래 있던 bookdelete, insert부분 태민님이 분리해서 다른 파일로 분리했습니다.
 }
