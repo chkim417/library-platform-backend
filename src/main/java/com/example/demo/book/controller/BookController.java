@@ -23,9 +23,9 @@ public class BookController {
     // ==========================================
     @GetMapping
     public ResponseEntity<BookListResponse> getAllBooks(
-            @RequestParam(defaultValue = "1") Integer page,
-            @RequestParam(defaultValue = "latest") String sort,
-            @RequestParam(required = false) String keyword) {
+            @RequestParam(name = "page", defaultValue = "1") Integer page,
+            @RequestParam(name = "sort", defaultValue = "latest") String sort,
+            @RequestParam(name = "keyword", required = false) String keyword) {
 
         // ★ [목록 조회/검색/페이지네이션 로직] Service에 위임
         BookListResponse response = bookService.getAllBooks(page, sort, keyword);
@@ -37,7 +37,7 @@ public class BookController {
     // ==========================================
     @GetMapping("/search")
     public ResponseEntity<BookListResponse> searchBooks(
-            @RequestParam(required = false) String keyword) {
+            @RequestParam(name = "keyword", required = false) String keyword) {
 
         // ★ [검색 로직] Service의 getAllBooks 메서드를 재사용하여 검색 위임
         BookListResponse response = bookService.getAllBooks(1, "latest", keyword);
@@ -48,7 +48,7 @@ public class BookController {
     // 3. 도서 상세 조회 ( GET /api/books/{bookId})
     // ==========================================
     @GetMapping("/{bookId}")
-    public ResponseEntity<BookResponse> getBookById(@PathVariable Long bookId) {
+    public ResponseEntity<BookResponse> getBookById(@PathVariable(name = "bookId") Long bookId) {
 
         // ★ [상세 조회 로직] Service에 위임하여 상세 정보 및 재고 계산 요청
         BookResponse book = bookService.getBookById(bookId);
