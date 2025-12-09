@@ -39,7 +39,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/auth/signup", "/auth/login", "/admin/login").permitAll()
 
                         // 도서 목록/검색/상세 조회는 보통 비로그인 상태에서도 보여주므로 permitAll 처리
-                        .requestMatchers(HttpMethod.GET, "/books/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/books/**").permitAll()
 
 
                         // ====================================================
