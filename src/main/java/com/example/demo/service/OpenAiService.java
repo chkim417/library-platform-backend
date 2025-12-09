@@ -19,6 +19,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Base64;
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 public class OpenAiService {
@@ -41,29 +43,26 @@ public class OpenAiService {
         this.restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory());
     }
 
-    public ImageResponse generateImage(ImageRequest request) {
+    public String generateImage(ImageRequest request) {
 
         if ((request.getPrompt() + SAFE_SUFFIX).length() > MAX_PROMPT_LENGTH) {
-            ImageResponse error = new ImageResponse();
-            error.setErrorMessage("프롬프트가 너무 깁니다.");
-            return error;
+            return "프롬프트가 너무 깁니다.";
         }
+        String path = "";
 
-        String refinedPrompt = request.getPrompt() + SAFE_SUFFIX;
+        String refinedPrompt = request.getPrompt();
 
         // API 요청 헤더
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.set("Authorization", "Bearer " + apiKey.trim());
+        Map<String, Object> requestPayload = new HashMap<>();
+        requestPayload.put("prompt", refinedPrompt);
+        requestPayload.put("n", 1);
+        requestPayload.put("size", "512x512");
 
-        // 요청 Body 구성 (bookTitle 포함해야 함!)
-        ImageRequest requestPayload =
-                new ImageRequest(refinedPrompt, 1, "480x560", request.getTitle());
-
-        HttpEntity<ImageRequest> entity = new HttpEntity<>(requestPayload, headers);
-
-        ResponseEntity<ImageResponse> response =
-                restTemplate.postForEntity(apiUrl, entity, ImageResponse.class);
+        HttpEntity<Map<String, Object>> entity = new HttpEntity<>(requestPayload, headers);
+        ResponseEntity<ImageResponse> response = restTemplate.postForEntity(apiUrl, entity, ImageResponse.class);
 
         ImageResponse body = response.getBody();
 
@@ -75,8 +74,8 @@ public class OpenAiService {
                 BufferedImage image = ImageIO.read(new URL(imageUrl));
 
                 if (image == null) {
-                    body.setErrorMessage("이미지 다운로드 실패");
-                    return body;
+//                    body.setErrorMessage("이미지 다운로드 실패");
+                    return "이미지 다운로드 실패";
                 }
 
                 // PNG 변환
@@ -85,29 +84,29 @@ public class OpenAiService {
                 byte[] pngBytes = pngOut.toByteArray();
 
                 // Base64 변환
-                String base64 = Base64.getEncoder().encodeToString(pngBytes);
+//                String base64 = Base64.getEncoder().encodeToString(pngBytes);
 
                 // 저장 경로 생성
                 String folderPath = "src/main/resources/img";
                 Files.createDirectories(Paths.get(folderPath));
+                path = folderPath + "/" + request.getTitle();
 
-                Path savePath = Paths.get(folderPath + "/" + request.getTitle() + ".txt");
+                Path savePath = Paths.get(path + ".png");
 
                 // Base64 파일 저장
-                Files.write(savePath, base64.getBytes());
+//                Files.write(savePath, base64.getBytes());
+                Files.write(savePath, pngBytes);
 
-                System.out.println("이미지 Base64 저장 완료: " + savePath);
+//                System.out.println("이미지 Base64 저장 완료: " + savePath);
 
             } catch (Exception e) {
                 e.printStackTrace();
                 body.setErrorMessage("이미지 처리 중 오류 발생");
             }
 
-            return body;
+            return path;
         }
 
-        ImageResponse empty = new ImageResponse();
-        empty.setErrorMessage("이미지가 생성되지 않았습니다.");
-        return empty;
+        return "이미지가 생성되지 않았습니다.";
     }
 }

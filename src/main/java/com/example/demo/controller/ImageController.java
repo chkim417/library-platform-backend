@@ -16,7 +16,7 @@ public class ImageController {
     }
 
     @PostMapping("/generate")
-    public ImageResponse generateImage(@RequestBody ImageRequest request) {
+    public String generateImage(@RequestBody ImageRequest request) {
         return openAiService.generateImage(request);   // DTO 전체 전달
     }
 }
