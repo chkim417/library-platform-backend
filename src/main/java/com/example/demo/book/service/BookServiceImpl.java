@@ -85,21 +85,19 @@ public class BookServiceImpl implements BookService {
 
         private BookResponse mapToResponse(Book book, boolean includeDetail) {
                 String description = null;
-                String genre = null;
-                String tag = null;
-                Boolean isLoaned = null;
 
                 if (includeDetail) {
                         description = bookDetailRepository.findById(book.getId())
                                         .map(BookDetail::getDescription)
                                         .orElse(null);
-                        genre = book.getGenre();
-                        tag = book.getTag();
-                        // 대출 가능 여부 확인: 대출되지 않은(isLoaned=false) 책이 하나라도 있으면 "대출중 아님(false)"
-                        boolean isAvailable = bookManagementRepository.findFirstByBookIdAndIsLoanedFalse(book.getId())
-                                        .isPresent();
-                        isLoaned = !isAvailable;
                 }
+
+                String genre = book.getGenre();
+                String tag = book.getTag();
+                // 대출 가능 여부 확인: 대출되지 않은(isLoaned=false) 책이 하나라도 있으면 "대출중 아님(false)"
+                boolean isAvailable = bookManagementRepository.findFirstByBookIdAndIsLoanedFalse(book.getId())
+                                .isPresent();
+                Boolean isLoaned = !isAvailable;
 
                 return BookResponse.builder()
                                 .bookNo(book.getId())
