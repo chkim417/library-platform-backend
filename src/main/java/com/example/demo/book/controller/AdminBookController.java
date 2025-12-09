@@ -24,12 +24,12 @@ public class AdminBookController {
      * 관리자 대여가능여부 확인 및 증감
      * POST /admin/books/{bookId}/stock
      * 요청 바디: { "count": <증감 수량, 기본 1 / 0이면 대여 불가로 처리> }
-     * 응답: { "stockCount": <대출 가능 재고 수량> }
+     * 응답: { "stockcount": <대출 가능 재고 수량> }
      */
     @PostMapping("/{bookId}/stock")
     public StockResponse checkAvailability(@PathVariable("bookId") Long bookId,
                                            @RequestBody StockRequest request) {
-        int count = request.getCount(); // 기본 1
+        int count = request.getStockcount(); // 기본 1
         int current = inventoryService.restock(bookId, count);
         return new StockResponse(current);
     }

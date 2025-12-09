@@ -24,8 +24,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 /**
  * 관리자 대여가능 여부(재고) 확인/증감 테스트
- * - 기본 count=1로 호출 시 stockCount=1
- * - count=0으로 호출 시 stockCount=0으로 리셋
+ * - 기본 stockcount=1로 호출 시 stockcount=1
+ * - stockcount=0으로 호출 시 stockcount=0으로 리셋
  */
 @SpringBootTest
 @AutoConfigureMockMvc(addFilters = false)
@@ -51,7 +51,7 @@ class AdminBookStockControllerTest {
     }
 
     @Test
-    void count가_기본값일때_stockCount는_1() throws Exception {
+    void stockcount가_기본값일때_stockcount는_1() throws Exception {
         Book book = bookRepository.save(Book.builder()
                 .title("재고 테스트")
                 .author("관리자")
@@ -68,7 +68,7 @@ class AdminBookStockControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(Map.of())))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.stockCount").value(1))
+                .andExpect(jsonPath("$.stockcount").value(1))
                 .andReturn();
 
         System.out.println("default count response: " + result.getResponse().getContentAsString());
@@ -76,7 +76,7 @@ class AdminBookStockControllerTest {
     }
 
     @Test
-    void count가_0이면_stockCount는_0으로_리셋() throws Exception {
+    void stockcount가_0이면_stockcount는_0으로_리셋() throws Exception {
         Book book = bookRepository.save(Book.builder()
                 .title("재고 리셋 테스트")
                 .author("관리자")
@@ -91,16 +91,16 @@ class AdminBookStockControllerTest {
         // 우선 재고를 1개 만들어둔다
         mockMvc.perform(post("/admin/books/{bookId}/stock", book.getId())
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(Map.of("count", 1))))
+                        .content(objectMapper.writeValueAsString(Map.of("stockcount", 1))))
                 .andExpect(status().isOk());
         assertThat(bookManagementRepository.countByBookIdAndIsLoanedFalse(book.getId())).isEqualTo(1);
 
         // count=0으로 호출하면 대여불가 처리로 0 반환
         MvcResult resetResult = mockMvc.perform(post("/admin/books/{bookId}/stock", book.getId())
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(Map.of("count", 0))))
+                        .content(objectMapper.writeValueAsString(Map.of("stockcount", 0))))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.stockCount").value(0))
+                .andExpect(jsonPath("$.stockcount").value(0))
                 .andReturn();
 
         System.out.println("reset response: " + resetResult.getResponse().getContentAsString());
