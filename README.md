@@ -25,7 +25,7 @@ Spring Boot 기반으로 개발된 **도서관 관리 시스템 백엔드 데모
 | 김지윤 | Backend Developer | JWT 인증, 로그인/회원가입, Spring Security, 예외 처리 |
 | 김채환 | Backend Developer | 도서 대여/반납, Loan 정책 및 API 개발, OpenAI 표지 생성, 이미지 저장 처리               |
 | 오흥찬 | Backend Developer | 도서 대여/반납, Loan 정책 및 API 개발               |
-| 황태민 | AI & Storage      | OpenAI 표지 생성, 이미지 저장 처리, Base64 변환       |
+| 황태민 | Backend Developer      | OpenAI 표지 생성, 이미지 저장 처리, Base64 변환       |
 
 > 인원 구성 및 역할은 예시입니다. 실제 팀 구조에 맞게 수정하세요!
 
