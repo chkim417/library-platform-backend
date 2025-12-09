@@ -6,5 +6,5 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface BookRepository extends JpaRepository<Book, Long> {
-    Page<Book> findByTitleContaining(String keyword, Pageable pageable);
+    Page<Book> findByTitleContainingOrAuthorContaining(String title, String author, Pageable pageable);
 }
