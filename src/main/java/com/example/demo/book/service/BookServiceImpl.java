@@ -33,14 +33,19 @@ public class BookServiceImpl implements BookService {
         public BookListResponse getAllBooks(Integer page, String sort, String keyword) {
                 // 0-based index 처리
                 int pageNum = (page != null && page > 0) ? page - 1 : 0;
-                String sortProp = (sort != null && !sort.isEmpty()) ? sort : "id";
+                Sort sortObj = Sort.by("id");
+                if ("latest".equals(sort)) {
+                        sortObj = Sort.by("registrationDate").descending();
+                } else if (sort != null && !sort.isEmpty()) {
+                        sortObj = Sort.by(sort);
+                }
 
                 // Spring Data JPA를 사용한 페이지네이션/정렬
-                Pageable pageable = PageRequest.of(pageNum, 10, Sort.by(sortProp));
+                Pageable pageable = PageRequest.of(pageNum, 10, sortObj);
                 Page<Book> bookPage;
 
                 if (keyword != null && !keyword.isEmpty()) {
-                        bookPage = bookRepository.findByTitleContaining(keyword, pageable);
+                        bookPage = bookRepository.findByTitleContainingOrAuthorContaining(keyword, keyword, pageable);
                 } else {
                         bookPage = bookRepository.findAll(pageable);
                 }

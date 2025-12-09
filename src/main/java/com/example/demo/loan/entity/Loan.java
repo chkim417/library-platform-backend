@@ -26,4 +26,14 @@ public class Loan {
 
     private Integer fee; // 대여료
     private LocalDate loanDate; // 대여기간
+
+    @Enumerated(EnumType.STRING)
+    private LoanStatus status;
+
+    public enum LoanStatus {
+        ON_LOAN,
+        RETURNED,
+        OVERDUE
+    }
+
 }
