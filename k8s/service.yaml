@@ -3,10 +3,10 @@ kind: Service
 metadata:
   name: my-web-service
 spec:
-  type: LoadBalancer  # AWS 로드밸런서(CLB/NLB)를 자동으로 연결해줌
+  type: NodePort
   selector:
-    app: backend
+    app: backend   # Deployment의 라벨과 일치
   ports:
     - protocol: TCP
-      port: 80        # 외부에서 접속할 포트
-      targetPort: 8080  # 컨테이너 내부 포트
+      port: 80
+      targetPort: 8080
